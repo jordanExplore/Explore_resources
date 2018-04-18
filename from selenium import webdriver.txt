@@ -1,0 +1,328 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+browser = webdriver.Chrome()
+
+browser.get('httpwww.google.com')
+
+elem = browser.find_element_by_id('lst-ib')  # Find the search box
+elem.send_keys('seleniumhq' + Keys.RETURN)
+
+##############################################
+G_doc code
+
+
+function myFunction(target, replacement){
+  var target = 'Facilitator Full Name'
+  var replacement = 'Heyyyyoooo'
+
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  var childElement = searchResult.getElement().getParent().getParent();
+  var nextElement = childElement.getNextSibling();
+  
+  nextElement.asText().setText(replacement);
+  
+  searchResult = bodyElement.findText(target, searchResult);
+  var childElement = searchResult.getElement().getParent().getParent();
+  var nextElement = childElement.getNextSibling();
+  
+  nextElement.asText().setText(replacement);
+  
+}
+
+
+############################################# workbook grader
+function replaceNextCell(target, replacement, instance){
+  //var target = 'Facilitator Full Name'
+  //var replacement = 'Heyyyyoooo'
+
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  
+  if (instance == 1){
+    
+    var searchResult = bodyElement.findText(target);
+    var childElement = searchResult.getElement().getParent().getParent();
+    var nextElement = childElement.getNextSibling();
+    nextElement.asText().setText(replacement);
+  }
+  
+  else if (instance > 1){
+    var searchResult = bodyElement.findText(target);
+    var childElement = searchResult.getElement().getParent().getParent();
+    var nextElement = childElement.getNextSibling();
+    nextElement.asText().setText(replacement);
+    var i;
+    for (i = 1; i < instance; i++){
+      searchResult = bodyElement.findText(target, searchResult);
+      var childElement = searchResult.getElement().getParent().getParent();
+      var nextElement = childElement.getNextSibling();
+      nextElement.asText().setText(replacement);
+    }
+  }
+  
+}
+
+function checkBoxes(target, column){
+  //var target = 'Operation of technical equipment'
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  //searchResult = bodyElement.findText(target, searchResult);
+  var childElement = searchResult.getElement().getParent().getParent().getParent();
+  Logger.log(childElement);
+  var nextElement = childElement.getChild(column)
+  Logger.log(nextElement);
+  nextElement.asText().setText('X');
+}
+
+function checkBoxes2(target, column){
+  //var target = 'Operation of technical equipment'
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  searchResult = bodyElement.findText(target, searchResult);
+  var childElement = searchResult.getElement().getParent().getParent().getParent();
+  Logger.log(childElement);
+  var nextElement = childElement.getChild(column)
+  Logger.log(nextElement);
+  nextElement.asText().setText('X');
+}
+
+function enterSignature(target , image, instance){
+  //var instance = 4
+  //var target = 'Facilitator Signature'
+  //var image  = "https://drive.google.com/open?id=119RsP3sQG2qBmlobfIaZwxHO62QARQuX";
+  var fileID = image.match(/[\w\_\-]{25,}/).toString();
+  var blob   = DriveApp.getFileById(fileID).getBlob();
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  if (instance == 1){
+    var searchResult = bodyElement.findText(target);
+    var childElement = searchResult.getElement().getParent().getParent();
+    var nextElement = childElement.getNextSibling();
+    var signature = nextElement.asTableCell().appendImage(blob);
+    signature.setHeight(50);
+    signature.setWidth(120);
+  }
+  else if(instance > 1){
+    var searchResult = bodyElement.findText(target);
+    var childElement = searchResult.getElement().getParent().getParent().getParent();
+    Logger.log(childElement)
+    var nextElement = childElement.getChild(2);
+    Logger.log(nextElement)
+    var signature = nextElement.asTableCell().appendImage(blob);
+    signature.setHeight(50);
+    signature.setWidth(120);
+    var i;
+    for (i = 1; i < instance-1; i++){
+      searchResult = bodyElement.findText(target, searchResult);
+      var childElement = searchResult.getElement().getParent().getParent().getParent();
+      var nextElement = childElement.getChild(2);
+      var signature = nextElement.asTableCell().appendImage(blob);
+      signature.setHeight(50);
+      signature.setWidth(120);
+    }
+    searchResult = bodyElement.findText(target, searchResult);
+    var childElement = searchResult.getElement().getParent().getParent().getParent();
+    var nextElement = childElement.getChild(3);
+    var signature = nextElement.asTableCell().appendImage(blob);
+    signature.setHeight(50);
+    signature.setWidth(120);
+  }
+    
+}
+
+
+function checkAnswerNL(target, array, points){
+  //var target = '13925 EEK2'
+  //var array = ['powerpoint', 'powerbi']
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  var childElement = searchResult.getElement().getParent().getParent().getParent();
+  var nextElement = childElement.getNextSibling().getChild(0).getText();
+  var answers = nextElement.toLowerCase();
+  var i;
+  var correct = 0;
+  for (i=0; i<array.length; i++){
+    var score = answers.search(array[i]);
+    if(score != -1 && correct<points){
+       correct ++;
+    }
+  }
+  Logger.log(correct) 
+}
+
+
+function checkAnswerNC(target, array, points){
+  var points = 3;
+  var target = 'Stage Presence';
+  var array = ['confidence', 'loud','stand'];
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  var childElement = searchResult.getElement().getParent().getParent();
+  var nextElement = childElement.getNextSibling().asText().getText();
+  var answers = nextElement.toLowerCase();
+  var i;
+  var correct = 0;
+  for (i=0; i<array.length; i++){
+    var score = answers.search(array[i]);
+    if(score != -1 && correct<points){
+       correct ++;
+    }
+  }
+  Logger.log(correct) 
+}
+
+function checkAnswerSC(target, array, points){
+  //var points = 3;
+  //var target = 'Stage Presence';
+  //var array = ['confidence', 'loud','stand'];
+  var doc = DocumentApp.getActiveDocument();
+  var bodyElement = DocumentApp.getActiveDocument().getBody();
+  var searchResult = bodyElement.findText(target);
+  var childElement = searchResult.getElement().getParent().getParent();
+  var nextElement = childElement.asText().getText();
+  var answers = nextElement.toLowerCase();
+  var i;
+  var correct = 0;
+  for (i=0; i<array.length; i++){
+    var score = answers.search(array[i]);
+    if(score != -1 && correct<points){
+       correct ++;
+    }
+  }
+  childElement.asTableCell().appendParagraph('('+correct+'/'+points+')').setForegroundColor('#ff0000');
+  return(correct)
+}
+
+
+
+
+function implement(){
+  
+  // names and signatures///////////////////////////////////////////////////////////////////////////////////////////
+  
+  replaceNextCell('Facilitator Name','Jordan Haskel',1);
+  enterSignature('Facilitator Signature', 'https://drive.google.com/open?id=119RsP3sQG2qBmlobfIaZwxHO62QARQuX', 4);
+  Log.logger('Names and sigs: succesful')
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  //marking class activity 1////////////////////////////////////////////////////////////////////////////////////////
+  
+  var answer = ['ability to manage oneself', 'manage yourself'];
+  var q1_1a = checkAnswerSC('Explain what is meant by self-organisation', answer, 1);
+  
+  var answer = ['plans', 'organises systems', 'Organises personal time', 'preparation time', 'schedules and timetables', 'measure result', 'prioritises', 'identifies critical tasks',
+               'logical order', 'establishes priorities', 'list', 'adjusts priorities', 'eliminates tasks'];
+  var q1_1b = checkAnswerSC('Explain what is meant by self-organisation', answer, 5);
+  
+  var answer = ['main points', 'few words', 'short sentence'];
+  var q1_2 = checkAnswerSC('Explain what is meant by the pertinent', answer, 3);
+  
+  var answer = ['audience', 'material to include', 'order', 'support'];
+  var q1_3 = checkAnswerSC('Explain why it is important to research', answer, 2);
+  
+  var answer = ['table', 'close', 'formal', 'see each other', 'see everyone', 'writ', 'spac'];
+  var q1_4 = checkAnswerSC('You are going to present a new procedure', answer, 2);
+  
+  var answer = ['understanding', 'offens', 'body language', 'differen'];
+  var q1_5 = checkAnswerSC('learn about any particular cultural', answer, 4);
+  
+  Log.logger('CA1 questions: succesful')
+  
+  //checkboxes
+  checkBoxes2('A list of the pertinent points for the presentation',7);
+  checkBoxes('Research done on the group and group needs',7);
+  checkBoxes('Research done on the best env',7);
+  checkBoxes('Research done to gather content ',7);
+  checkBoxes('How s/he is going to take cultural',7);
+  checkBoxes('His/her plan of the content and logical flow',7)
+  
+  Log.logger('CA1 boxes: succesful')
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  //marking class activity 2/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  var answer = ['beginning', 'introduction', 'middle', 'body', 'end', 'conclusion'];
+  var q2_1a = checkAnswerSC('Describe the typical structure of a well-organised speech', answer, 3);
+  
+  var answer = ['attention', 'build', 'statement', 'audience', 'going to tell'];
+  var q2_1b = checkAnswerSC('Describe the typical structure of a well-organised speech', answer, 2);
+  
+  var answer = ['visual', 'support', 'benefit', 'points', 'tell', 'help', 'examples', 'audience'];
+  var q2_1c = checkAnswerSC('Describe the typical structure of a well-organised speech', answer, 2);
+  
+  var answer = ['ve told', 'reiterate', 'sum', 'closing', 'support', 'examples'];
+  var q2_1d = checkAnswerSC('Describe the typical structure of a well-organised speech', answer, 2);
+  
+  var answer = ['clarify', 'entertain', 'inform', 'interest', 'attention'];
+  var q2_2 = checkAnswerSC('Explain why you would recommend using slides in a presentation', answer, 3);
+  
+  var answer = ['prezi', 'power', 'goanimate', 'go animate','slide', ' ' ];
+  var q2_3 = checkAnswerSC('Explain which software program you use to create your slides', answer, 2);
+  
+  Log.logger('CA2 questions: succesful')
+  
+  //checkboxes
+  checkBoxes2('Organise the presentation material into A4 notes',7)
+  checkBoxes2('Use an appropriate software program',7)
+  checkBoxes2('Use colours in the ',7)
+  
+  Log.logger('CA2 boxes: succesful')
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  //marking class activity 3///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  var answer = ['back up', 'single shortcut', 'remote access', 'email', 'e-mail', 'print', 'rehearse', 'practice'];
+  checkAnswerSC('Explain which contingency', answer, 4);
+  
+  var answer = ['shyness', 'childhood', 'wors', 'youth', 'grow', 'older', 'adolescence'];
+  checkAnswerSC('Explain why you think', answer, 3);
+  
+  var answer = ['smile', 'breath', 'confid', 'positive', 'did well', 'visual', 'you care about', 'interested', 'caffeine', 'inoculation' ];
+  checkAnswerSC('Explain which techniques you', answer, 5);
+  
+  var answer = ['interest', 'energy', 'confidence', 'gesture', 'emphasis'];
+  checkAnswerSC('Explain how you will use eye contact', answer, 4);
+  
+  //do personal answer question here ///////
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!///
+  
+  Log.logger('CA3 questions: succesful')
+  
+  //Checkboxes
+  checkBoxes('Operation of technical equipment',7);
+  checkBoxes('Public speaking skills',7);
+  checkBoxes('Make appropriate eye contact',7);
+  checkBoxes('Consider cultural differences',7);
+  checkBoxes('Use body language effectively',7);
+  checkBoxes('Manage voice projection',7);
+  checkBoxes('Engage in dialogue with the',7);
+  checkBoxes('Structure and adapt presentation according to the characteristics and needs of the audience',7);
+  checkBoxes('Observe the response from the audience and adjust if necessary',7);
+  
+  Log.logger('CA3 boxes: succesful')
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  //marking class activity 4/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+  
+  Log.logger('CA4 questions: succesful')
+  
+  
+  //checkboxes
+  
+  
+  
+  
+  Log.logger('CA4 boxes: succesful')
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  
+}
